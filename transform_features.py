@@ -12,7 +12,8 @@ def main(argv):
     tf_path = argv[2]
     target = argv[3]
 
-    spark = SparkSession.builder.getOrCreate()
+    spark = SparkSession.builder.config("spark.driver.memory", "32g").config("spark.executor.memory", "32g")\
+        .config("spark.driver.maxResultSize", "20g").getOrCreate()
 
     with open("transform_spark.txt", "w") as file:
         file.write("spark context" + str(spark.sparkContext))

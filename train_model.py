@@ -16,8 +16,8 @@ def main(argv):
     result_path = argv[5]
     target = argv[6]
 
-    spark = SparkSession.builder.getOrCreate()
-
+    spark = SparkSession.builder.config("spark.driver.memory", "32g").config("spark.executor.memory", "32g")\
+        .config("spark.driver.maxResultSize", "20g").getOrCreate()
     with open("train_spark.txt", "w") as file:
         file.write("spark context" + str(spark.sparkContext))
         file.write("===SeessionID===")

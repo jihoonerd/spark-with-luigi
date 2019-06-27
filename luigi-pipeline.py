@@ -1,13 +1,7 @@
 import luigi
-import pyspark
 from pyspark.sql import SparkSession
-from collections import defaultdict
-from pyspark.ml.feature import VectorAssembler, StandardScaler, StringIndexer, OneHotEncoder, Imputer
-from pyspark.ml.clustering import GaussianMixture, KMeans
-from pyspark.ml import Pipeline
-import pickle
-from luigi.contrib.spark import SparkSubmitTask, PySparkTask
-
+import os
+from luigi.contrib.spark import SparkSubmitTask
 
 class GlobalSettings(luigi.Config):
 
@@ -20,10 +14,11 @@ class GlobalSettings(luigi.Config):
     # MODEL
     algorithm = luigi.Parameter(default="GMM")
     seed = luigi.Parameter(default="3")
-    k = luigi.Parameter(default="3")
+    k = luigi.Parameter(default="10")
 
     # Optional
     target = luigi.Parameter(default="insurance_subscribe")
+
 
 
 class TrainDataUpload(SparkSubmitTask):
@@ -75,13 +70,12 @@ class TrainModel(SparkSubmitTask):
 
 if __name__ == '__main__':
     # luigi.run()
-    spark = SparkSession.builder.getOrCreate()
-    with open("main_spark.txt", "w") as file:
-        file.write("spark context" + str(spark.sparkContext))
-        file.write("===SeessionID===")
-        file.write(str(id(spark)))
+    import time
+    start = time.time()
 
     luigi.build([TrainModel()])
+    end = time.time()
+    print("Elapsed Time: ", end-start)
 
 #======================================================================
 

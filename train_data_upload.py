@@ -6,8 +6,8 @@ def main(argv):
     data_path = argv[1]
     parquet_path = argv[2]
 
-    spark = SparkSession.builder.getOrCreate()
-
+    spark = SparkSession.builder.config("spark.driver.memory", "32g").config("spark.executor.memory", "32g")\
+        .config("spark.driver.maxResultSize", "20g").getOrCreate()
     with open("upload_spark.txt", "w") as file:
         file.write("spark context" + str(spark.sparkContext))
         file.write("===SeessionID===")
