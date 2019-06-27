@@ -14,7 +14,7 @@ class GlobalSettings(luigi.Config):
     # MODEL
     algorithm = luigi.Parameter(default="GMM")
     seed = luigi.Parameter(default="3")
-    k = luigi.Parameter(default="10")
+    k = luigi.Parameter(default="6")
 
     # Optional
     target = luigi.Parameter(default="insurance_subscribe")
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     import time
     start = time.time()
 
-    luigi.build([TrainModel()])
+    luigi.build([TrainModel()], local_scheduler=True)
     end = time.time()
     print("Elapsed Time: ", end-start)
 

@@ -7,17 +7,21 @@ from pyspark.ml.clustering import GaussianMixture, KMeans
 from pyspark.ml import Pipeline
 import time
 
-if __name__ == "__main__":
-    data_path = sys.argv[1]
-    export_path = sys.argv[2]
-    num_partition = int(sys.argv[3])
-    seed = int(sys.argv[4])
-    k = int(sys.argv[5])
-    target = sys.argv[6]
-    alg = sys.argv[7]
+# PATH
+data_path = "./usl_data/marketing.csv"
+parquet_path = "./luigi/marketing_parquet/"
+tf_path = "./luigi/marketing_transformed/"
+result_path = "./luigi/marketing_result/"
 
-parquet_directory = data_path.replace('.csv', '') + '_parquet/'
+# MODEL
+algorithm = "GMM"
+seed = int("3")
+k = int("3")
 
+# Optional
+target = "insurance_subscribe"
+
+start = time.time()
 # Open Session
 spark = pyspark.sql.SparkSession.builder.master("local").appName("test").getOrCreate()
 
@@ -27,18 +31,17 @@ df = spark.read.format("csv")\
     .load(data_path)
 
 # Convert data type to parquet format
-df.write.mode("overwrite").parquet(parquet_directory)
+df.write.mode("overwrite").parquet(parquet_path)
 df = spark.read.option("header", "true")\
     .option("inferSchema", "true")\
-    .parquet(parquet_directory)
+    .parquet(parquet_path)
 print("Using PARQUET format")
 data_length = df.count()
 print("Data Size: ", data_length)
 
 # Repartitioning
-df = df.repartition(num_partition)
+df = df.repartition(200)
 
-start = time.time()
 
 # DATA TYPE SUMMARY
 data_types = defaultdict(list)
@@ -90,13 +93,13 @@ tot_pipeline = Pipeline(stages=[features_processed])
 processed = tot_pipeline.fit(df).transform(df)
 
 # MODELING
-if alg == 'GMM':
+if algorithm == 'GMM':
     gmm = GaussianMixture().setK(k).setFeaturesCol("features").setSeed(seed)
     print("=====" * 8)
     print(gmm.explainParams())
     print("=====" * 8)
     model = gmm.fit(processed)
-elif alg == 'KMeans':
+elif algorithm == 'KMeans':
     kmm = KMeans().setK(k).setFeaturesCol("features").setSeed(seed)
     print("=====" * 8)
     print(kmm.explainParams())
@@ -106,8 +109,8 @@ else:
     raise ValueError("no alg")
 
 prediction = model.transform(processed)
-prediction.select(numeric_features + category_features + [target, 'prediction']).coalesce(1).write.mode('overwrite').csv(export_path, header=True)
-print("Result file is successfully generated at: ", export_path)
+prediction.select(numeric_features + category_features + [target, 'prediction']).coalesce(1).write.mode('overwrite').csv(result_path, header=True)
+print("Result file is successfully generated at: ", result_path)
 
 end=time.time()
 print("ELAPSED TIME: ", end - start)
