@@ -4,7 +4,7 @@ from pyspark.ml.feature import VectorAssembler, StandardScaler, StringIndexer, O
 from pyspark.ml.clustering import GaussianMixture, KMeans
 from pyspark.ml import Pipeline
 import time
-
+import pandas as pd
 # PATH
 data_path = "./usl_data/marketing.csv"
 parquet_path = "./luigi/marketing_parquet/"
@@ -118,5 +118,11 @@ prediction.select(feature_info["numeric_features"] + feature_info["category_feat
     'overwrite').csv(result_path, header=True)
 print("Result file is successfully generated at: ", result_path)
 
-end=time.time()
-print("ELAPSED TIME: ", end - start)
+end = time.time()
+elapsed = end - start
+print("Elapsed Time: ", elapsed)
+logtable = pd.read_csv("./timelog.csv")
+logtable.append(pd.DataFrame([[data_path, "multiple session", elapsed,
+                               algorithm, k,seed]],
+                             columns=logtable.columns),
+                ignore_index=True).to_csv("./timelog.csv", index=False)

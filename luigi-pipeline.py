@@ -2,6 +2,7 @@ import luigi
 from pyspark.sql import SparkSession
 import os
 from luigi.contrib.spark import SparkSubmitTask
+import pandas as pd
 
 class GlobalSettings(luigi.Config):
 
@@ -75,7 +76,13 @@ if __name__ == '__main__':
     # luigi.run()
     luigi.build([TrainModel()], local_scheduler=True)
     end = time.time()
-    print("Elapsed Time: ", end-start)
+    elapsed = end-start
+    print("Elapsed Time: ", elapsed)
+    logtable = pd.read_csv("./timelog.csv")
+    logtable.append(pd.DataFrame([[GlobalSettings().data_path, "multiple session", elapsed,
+                               GlobalSettings().algorithm, GlobalSettings().k, GlobalSettings().seed]], columns=logtable.columns),
+                    ignore_index=True).to_csv("./timelog.csv", index=False)
+
 
 #======================================================================
 
