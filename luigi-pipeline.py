@@ -72,7 +72,7 @@ if __name__ == '__main__':
     # luigi.run()
     import time
     start = time.time()
-
+    # luigi.run()
     luigi.build([TrainModel()], local_scheduler=True)
     end = time.time()
     print("Elapsed Time: ", end-start)
