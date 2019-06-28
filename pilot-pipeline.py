@@ -6,18 +6,18 @@ from pyspark.ml import Pipeline
 import time
 import pandas as pd
 # PATH
-data_path = "./usl_data/marketing.csv"
-parquet_path = "./luigi/marketing_parquet/"
-tf_path = "./luigi/marketing_transformed/"
-result_path = "./luigi/marketing_result/"
+data_path = "./usl_data/mnist_test.csv"
+parquet_path = "./luigi/mnist_test_parquet/"
+tf_path = "./luigi/mnist_test_transformed/"
+result_path = "./luigi/mnist_test_result/"
 
 # MODEL
 algorithm = "GMM"
 seed = int("3")
-k = int("6")
+k = int("10")
 
 # Optional
-target = "insurance_subscribe"
+target = "label"
 
 start = time.time()
 spark = SparkSession.builder.master("local[*]").config("spark.driver.memory", "32g").config("spark.executor.memory", "32g").getOrCreate()
@@ -38,7 +38,7 @@ print("Save parquet format complete.")
 df = spark.read.option("header", "true") \
             .option("inferSchema", "true") \
             .parquet(parquet_path)
-df.repartition(200)
+df.repartition(10)
 
 # DATA TYPE SUMMARY
 data_types = defaultdict(list)
@@ -122,7 +122,7 @@ end = time.time()
 elapsed = end - start
 print("Elapsed Time: ", elapsed)
 logtable = pd.read_csv("./timelog.csv")
-logtable.append(pd.DataFrame([[data_path, "multiple session", elapsed,
+logtable.append(pd.DataFrame([[data_path, "one shot", elapsed,
                                algorithm, k,seed]],
                              columns=logtable.columns),
                 ignore_index=True).to_csv("./timelog.csv", index=False)

@@ -7,18 +7,18 @@ import pandas as pd
 class GlobalSettings(luigi.Config):
 
     # PATH
-    data_path = luigi.Parameter(default="./usl_data/marketing.csv")
-    parquet_path = luigi.Parameter(default="./luigi/marketing_parquet/")
-    tf_path = luigi.Parameter(default="./luigi/marketing_transformed/")
-    result_path = luigi.Parameter(default="./luigi/marketing_result/")
+    data_path = luigi.Parameter(default="./usl_data/mnist_test.csv")
+    parquet_path = luigi.Parameter(default="./luigi/mnist_test_parquet/")
+    tf_path = luigi.Parameter(default="./luigi/mnist_test_transformed/")
+    result_path = luigi.Parameter(default="./luigi/mnist_test_result/")
 
     # MODEL
     algorithm = luigi.Parameter(default="GMM")
     seed = luigi.Parameter(default="3")
-    k = luigi.Parameter(default="6")
+    k = luigi.Parameter(default="10")
 
     # Optional
-    target = luigi.Parameter(default="insurance_subscribe")
+    target = luigi.Parameter(default="label")
 
 
 

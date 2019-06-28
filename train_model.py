@@ -26,7 +26,7 @@ def main(argv):
     df = spark.read.option("header", "true") \
         .option("inferSchema", "true") \
         .parquet(tf_path)
-    df.repartition(200)
+    df.repartition(10)
 
     # MODELING
     if algorithm == 'GMM':

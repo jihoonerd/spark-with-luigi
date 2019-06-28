@@ -24,7 +24,7 @@ def main(argv):
     df = spark.read.option("header", "true") \
         .option("inferSchema", "true") \
         .parquet(parquet_path)
-    df.repartition(200)
+    df.repartition(10)
 
     # DATA TYPE SUMMARY
     data_types = defaultdict(list)

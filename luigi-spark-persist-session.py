@@ -16,18 +16,18 @@ import pandas as pd
 class GlobalSettings(luigi.Config):
 
     # PATH
-    data_path = luigi.Parameter(default="./usl_data/marketing.csv")
-    parquet_path = luigi.Parameter(default="./luigi/marketing_parquet/")
-    tf_path = luigi.Parameter(default="./luigi/marketing_transformed/")
-    result_path = luigi.Parameter(default="./luigi/marketing_result/")
+    data_path = luigi.Parameter(default="./usl_data/mnist_test.csv")
+    parquet_path = luigi.Parameter(default="./luigi/mnist_test_parquet/")
+    tf_path = luigi.Parameter(default="./luigi/mnist_test_transformed/")
+    result_path = luigi.Parameter(default="./luigi/mnist_test_result/")
 
     # MODEL
     algorithm = luigi.Parameter(default="GMM")
     seed = luigi.Parameter(default="3")
-    k = luigi.Parameter(default="6")
+    k = luigi.Parameter(default="10")
 
     # Optional
-    target = luigi.Parameter(default="insurance_subscribe")
+    target = luigi.Parameter(default="label")
 
 
 
@@ -85,7 +85,7 @@ class Transform(luigi.Task):
         df = spark.read.option("header", "true") \
             .option("inferSchema", "true") \
             .parquet(parquet_path)
-        df.repartition(200)
+        df.repartition(10)
 
         # DATA TYPE SUMMARY
         data_types = defaultdict(list)
@@ -174,7 +174,7 @@ class TrainModel(luigi.Task):
         df = spark.read.option("header", "true") \
             .option("inferSchema", "true") \
             .parquet(tf_path)
-        df.repartition(200)
+        df.repartition(10)
 
         # MODELING
         if algorithm == 'GMM':
@@ -220,7 +220,7 @@ if __name__ == '__main__':
     elapsed = end - start
     print("Elapsed Time: ", elapsed)
     logtable = pd.read_csv("./timelog.csv")
-    logtable.append(pd.DataFrame([[GlobalSettings().data_path, "multiple session", elapsed,
+    logtable.append(pd.DataFrame([[GlobalSettings().data_path, "one session", elapsed,
                                    GlobalSettings().algorithm, GlobalSettings().k, GlobalSettings().seed]],
                                  columns=logtable.columns),
                     ignore_index=True).to_csv("./timelog.csv", index=False)
