@@ -215,7 +215,7 @@ if __name__ == '__main__':
         file.write("===SeessionID===")
         file.write(str(id(spark)))
 
-    luigi.build([TrainModel(settings=settings)], local_scheduler=True)
+    luigi.build([TrainModel(settings=settings)])
     end = time.time()
     elapsed = end - start
     print("Elapsed Time: ", elapsed)

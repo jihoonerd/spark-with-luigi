@@ -118,4 +118,5 @@ data_path,type,elapsed,algorithm ,k,seed
 ./usl_data/mnist_test.csv,one session,423.3238937854767,GMM,10,3
 ./usl_data/mnist_test.csv,one shot,518.8913776874542,GMM,10,3
 ./usl_data/mnist_test.csv,multiple session,361.013720035553,GMM,10,3
-./usl_data/mnist_test.csv,one session,419.91166615486145,GMM,10,3
+./usl_data/mnist_test.csv,one session,419.9116661548615,GMM,10,3
+./usl_data/mnist_test.csv,one session,411.74833250045776,GMM,10,3
